@@ -1,12 +1,12 @@
 # VASP Post-Process Skills
 
-> **VASP 后处理 Agent Skill** — 为 AI 编程助手（OpenCode / Claude 等）设计的 VASP 文件后处理知识库与工作流。
+> **VASP 后处理 Agent Skill** — 为 AI 编程助手（如 OpenCode、Claude 等）设计的 VASP 文件后处理知识库与工作流。
 
 ## 这是什么？
 
 本仓库包含一套完整的 VASP 后处理 **Agent Skill**，涵盖 EIGENVAL、CHGCAR、PROCAR、WAVECAR、DOSCAR 等核心 VASP 输出文件的格式文档、探测脚本和已知陷阱清单。
 
-这套 skill 最初在 `yangke25491/vaspunfold` 项目（VASP 费米面反折叠工具）的开发过程中积累而成，所有格式信息均经过真实文件验证，而非仅依赖 VASP Wiki 的官方文档。
+所有格式信息均经过真实文件验证，而非仅依赖 VASP Wiki 的官方文档。**但请注意，VASP 版本差异巨大，我在有限的环境下测试过，可能还有很多未覆盖的坑。欢迎提 Issue 补充。**
 
 ## 为什么需要这个 skill？
 
@@ -14,7 +14,7 @@
 
 - **WAVECAR** 的二进制格式**从未被 VASP 官方公开**
 - **EIGENVAL** 的 VASP Wiki 页面**没有格式说明**
-- **DOSCAR** 的实测列数可能与 Wiki 标准不同（本项目实测 17 列 vs Wiki 标准值）
+- **DOSCAR** 的实测列数可能与 Wiki 标准不同
 - **PROCAR** 的列数取决于 PAW 数据集（含 f 电子的原子额外产生 7 个 f 轨道列）
 - 文件格式随 VASP 版本、编译选项、INCAR 设置变化
 
@@ -58,7 +58,7 @@ vasp-postprocess_skills/
 - 官方文档链接与状态（有/无文档）
 - 格式结构图
 - 物理量换算公式
-- 已知坑（本项目实测验证）
+- 已知坑（实测验证，但欢迎补充）
 
 | 文件 | 官方文档 | 关键注意事项 |
 |------|---------|-------------|
@@ -112,49 +112,47 @@ inspect_eigenval('EIGENVAL')
 | 19 | WAVECAR 无官方格式文档 | WAVECAR | 只能用第三方库 |
 | 20 | EIGENVAL 无官方格式文档 | EIGENVAL | 写探测脚本先看前 7 行 |
 
-## 如何在 OpenCode 中使用
+## 如何使用
 
-1. 将本仓库 clone 到 OpenCode 的 skills 目录：
+### 在 OpenCode 中使用
 
 ```bash
-# 放到项目的 .opencode/skills/ 下
 cd your-project/
 git clone https://github.com/yangke25491/vasp-postprocess_skills.git .opencode/skills/vasp-postprocess
 ```
 
-2. OpenCode 会自动识别 `.opencode/skills/vasp-postprocess/SKILL.md` 中的 frontmatter 并注册 skill。
+OpenCode 会自动识别 `.opencode/skills/vasp-postprocess/SKILL.md` 中的 frontmatter 并注册 skill。
 
-3. 当你与 AI 助手对话时提及 VASP 文件，skill 会自动触发（或询问确认后触发）。
-
-## 如何在 Claude / 其他 AI 中使用
+### 在 Claude / 其他 AI 中使用
 
 将 `SKILL.md` 的内容作为 system prompt 的一部分加载，或将整个仓库作为项目上下文提供给 AI。
 
 ## 验证来源
 
-所有格式文档均经过以下真实文件验证：
-- **项目**: `yangke25491/vaspunfold`（La3Ni2O7 体系）
-- **WAVECAR**: 25×25×5 Gamma-centered，3.4 GB，VASP 5.x
-- **EIGENVAL**: 272 k-pts, 168 bands, ISPIN=1
-- **PROCAR**: 含 f 轨道列（La/Pr/Nd/Sm/Eu/Gd PAW 数据集）
-- **DOSCAR**: NEDOS=3000, NIONS=36, 实测原子 DOS 17 列
-- **CHGCAR**: 448×144×144 FFT 网格
+所有格式文档均经过真实 VASP 计算文件验证（VASP 5.x, ISPIN=1）：
+- WAVECAR: Gamma-centered，3.4 GB
+- EIGENVAL: 272 k-pts, 168 bands
+- PROCAR: 含 f 轨道列（含稀土元素 PAW 数据集）
+- DOSCAR: NEDOS=3000, NIONS=36
+- CHGCAR: 448×144×144 FFT 网格
+
+## 不足与贡献
+
+- **我测试过，但肯定还有很多未覆盖的坑。**
+- VASP 版本差异（4.x / 5.x / 6.x）可能导致文件格式变化
+- ISPIN=2、SOC、非共线计算等情况的文件结构尚未充分验证
+- **欢迎提 Issue 或 PR**，帮助完善这套后处理知识库
 
 ## 修改日志
 
 ```
 2026-07-04: initial version
   - verified EIGENVAL/CHGCAR/PROCAR/WAVECAR/DOSCAR against real files + VASP Wiki
-  - structured into SKILL.md (core) + references/ (format docs) + scripts/ (templates)
   - 20 known pitfalls documented
-2026-07-12: published to GitHub as vasp-postprocess_skills
-  - moved from local .opencode/skills/ to standalone repository
+2026-07-12: published to GitHub
+  - moved from local to standalone public repository
 ```
 
 ## 许可
 
-仅供课题组内部传承使用。
-
-## 相关项目
-
-- [`yangke25491/vaspunfold`](https://github.com/yangke25491/vaspunfold) — VASP 费米面反折叠工具，本 skill 的验证来源
+MIT
