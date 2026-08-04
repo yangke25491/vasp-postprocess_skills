@@ -30,11 +30,11 @@ encut = wfc._encut
 | `wfc._lsorbit` | 是否 SOC |
 | `wfc._ispin` | 1 或 2 |
 
-## 坐标惯例（经本项目反复验证）
+## 坐标惯例（经多次验证）
 
 - `_kvecs` 在 **[-0.5, 0.5)**，不是 [0, 1)
 - Gamma-centered NK 奇数：k = (i-1)/NK → 映射到 [-0.5, 0.5) 时 k>=0.5 减 1
-- 有 shift 时：k += shift/NK（本项目中 kz shift = 0.05）
+- 有 shift 时：k += shift/NK（例如 kz shift 可为 0.05）
 - `find_K_from_k` 输出也在 [-0.5, 0.5)，可直接比较
 
 ## 已知坑
@@ -44,4 +44,4 @@ encut = wfc._encut
 - `_kvecs` 是 private API，版本间可能改名
 - **绝对不要对 `_kvecs` 做 `% 1.0`**：它已经在 [-0.5, 0.5)
 - 降级方案：`NK = int(round(NKPTS^(1/3)))`
-- 文件通常很大（本项目 3.4 GB），处理时有内存压力
+- 文件通常很大（GB 级），处理时有内存压力
