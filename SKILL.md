@@ -118,9 +118,9 @@ VASP 的文件格式取决于 VASP 版本、编译选项、INCAR 设置、甚至
 | 19 | WAVECAR 无官方格式文档 | WAVECAR | 无法手动解析 | 只能用第三方库 |
 | 20 | EIGENVAL 无官方格式文档 | EIGENVAL | 格式随版本变 | 写探测脚本先看前 7 行 |
 
-## 参考：已确认的 WAVECAR 配置
+## WAVECAR 配置参考
 
-来自 yangke25491/vaspunfold 项目（25×25×5 Gamma-centered，kz shift）：
+典型 Gamma-centered 网格（kz shift 示例）：
 
 ```
 _kvecs range: [-0.480000, 0.480000]
@@ -139,18 +139,18 @@ Gamma
 0 0 1           ← kz shift (NK 单位)
 ```
 
-## 传承说明
+## 维护说明
 
-本项目 skill 是为课题组传承设计的：踩过的坑都写进这里。当未来遇到 VASP 后处理问题时：
+本 skill 记录常见 VASP 后处理陷阱。当遇到新问题时：
 
-1. Agent 先查 VASP Wiki + 参考文档
+1. 先查 VASP Wiki + 参考文档
 2. 再出探测脚本确认本地文件格式
 3. 确认后再写处理代码
 4. 踩新坑就更新 `references/` 对应文件
 
 **修改日志：**
 ```
-2026-07-04: initial version, based on yangke25491/vaspunfold debugging
+2026-07-04: initial version
   - verified EIGENVAL/CHGCAR/PROCAR/WAVECAR/DOSCAR against real files + VASP Wiki
   - structured into SKILL.md (core) + references/ (format docs) + scripts/ (templates)
 YYYY-MM-DD: updated by [name]
