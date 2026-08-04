@@ -1,12 +1,12 @@
 # VASP Post-Process Skills
 
-> **VASP 后处理 Agent Skill** — 为 AI 编程助手（如 OpenCode、Claude 等）设计的 VASP 文件后处理知识库与工作流。
+> **VASP 后处理 Agent Skill** — 为 AI 编程助手设计的 VASP 文件后处理知识库与工作流。
 
 ## 这是什么？
 
 本仓库包含一套完整的 VASP 后处理 **Agent Skill**，涵盖 EIGENVAL、CHGCAR、PROCAR、WAVECAR、DOSCAR 等核心 VASP 输出文件的格式文档、探测脚本和已知陷阱清单。
 
-所有格式信息均经过真实文件验证，而非仅依赖 VASP Wiki 的官方文档。**但请注意，VASP 版本差异巨大，我在有限的环境下测试过，可能还有很多未覆盖的坑。欢迎提 Issue 补充。**
+所有格式信息均经过真实文件验证，而非仅依赖 VASP Wiki 的官方文档。**但请注意，VASP 版本差异巨大，在有限环境下测试过，可能还有很多未覆盖的坑。欢迎提 Issue 补充。**
 
 ## 为什么需要这个 skill？
 
@@ -127,16 +127,16 @@ git clone https://github.com/yangke25491/vasp-postprocess_skills.git .opencode/s
 
 ## 验证来源
 
-所有格式文档均经过真实 VASP 计算文件验证（VASP 5.x, ISPIN=1）：
-- WAVECAR: Gamma-centered，3.4 GB
-- EIGENVAL: 272 k-pts, 168 bands
-- PROCAR: 含 f 轨道列（含稀土元素 PAW 数据集）
-- DOSCAR: NEDOS=3000, NIONS=36
-- CHGCAR: 448×144×144 FFT 网格
+所有格式文档均经过真实 VASP 计算文件验证：
+- WAVECAR: Gamma-centered，GB 级大小
+- EIGENVAL: 数百 k-points，数百 bands
+- PROCAR: 含 f 轨道列（稀土元素 PAW 数据集）
+- DOSCAR: NEDOS 可配置，支持多原子投影
+- CHGCAR: 大规模 FFT 网格
 
 ## 不足与贡献
 
-- **我测试过，但肯定还有很多未覆盖的坑。**
+- **已测试，但肯定还有很多未覆盖的坑。**
 - VASP 版本差异（4.x / 5.x / 6.x）可能导致文件格式变化
 - ISPIN=2、SOC、非共线计算等情况的文件结构尚未充分验证
 - **欢迎提 Issue 或 PR**，帮助完善这套后处理知识库
