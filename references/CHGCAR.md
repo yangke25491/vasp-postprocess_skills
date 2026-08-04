@@ -40,7 +40,7 @@ n_r = data / (V_grid * V_cell)
 ## 已知坑
 
 - 文件可能巨大（数 GB），**不要全部读到内存**
-- augmentation occupancies **始终在网格数据之后**（本项目验证位置：~1857992 行，在 448×144×144 网格后）
+- augmentation occupancies **始终在网格数据之后**
 - 真实电荷密度需除以 `V_grid × V_cell`（两个体积，不是只除一个）
 - NELECT 验证：`data.sum() / V_grid`
 - 差分电荷 CHGCAR_diff 可能为负值
