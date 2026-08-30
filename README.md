@@ -1,79 +1,82 @@
 # VASP Post-Process Skills
 
-> **VASP 后处理 Agent Skill** — 为 AI 编程助手设计的 VASP 文件后处理知识库与工作流。
+<p align="center"><strong>English</strong> | <a href="README_zh.md">简体中文</a></p>
 
-## 这是什么？
+> **VASP post-processing Agent Skill** — a knowledge base and workflow for VASP file post-processing, designed for AI coding assistants.
 
-本仓库包含一套完整的 VASP 后处理 **Agent Skill**，涵盖 EIGENVAL、CHGCAR、PROCAR、WAVECAR、DOSCAR 等核心 VASP 输出文件的格式文档、探测脚本和已知陷阱清单。
+## What is this?
 
-所有格式信息均经过真实文件验证，而非仅依赖 VASP Wiki 的官方文档。**但请注意，VASP 版本差异巨大，在有限环境下测试过，可能还有很多未覆盖的坑。欢迎提 Issue 补充。**
+This repository provides a complete VASP post-processing **Agent Skill**, covering format documentation, inspection scripts, and a list of known pitfalls for the core VASP output files: EIGENVAL, CHGCAR, PROCAR, WAVECAR, and DOSCAR.
 
-## 为什么需要这个 skill？
+All format details are verified against real files rather than relying solely on the VASP Wiki documentation. **Please note that VASP versions differ greatly; these have been tested in a limited environment and there may still be many uncovered pitfalls. Issue reports are welcome.**
 
-### 问题：VASP 文件格式不可靠
+## Why this skill?
 
-- **WAVECAR** 的二进制格式**从未被 VASP 官方公开**
-- **EIGENVAL** 的 VASP Wiki 页面**没有格式说明**
-- **DOSCAR** 的实测列数可能与 Wiki 标准不同
-- **PROCAR** 的列数取决于 PAW 数据集（含 f 电子的原子额外产生 7 个 f 轨道列）
-- 文件格式随 VASP 版本、编译选项、INCAR 设置变化
+### The problem: VASP file formats are unreliable
 
-### 解决方案：先验证，后开发
+- **WAVECAR** — the binary format has **never been officially documented** by VASP
+- **EIGENVAL** — the VASP Wiki page has **no format specification**
+- **DOSCAR** — measured column counts may differ from the Wiki standard
+- **PROCAR** — the column count depends on the PAW dataset (atoms with f-electrons add 7 extra f-orbital columns)
+- File formats vary with VASP version, compile options, and INCAR settings
 
-本 skill 强制执行一套**三步验证法**：
+### The solution: verify first, then develop
 
-1. **查 VASP Wiki** — 了解官方格式的基准
-2. **真实文件探测** — 用探测脚本确认本地文件的实际格式
-3. **交叉验证** — 多文件间数据对齐（EIGENVAL NKPTS vs WAVECAR k点数 vs PROCAR k-point 数）
+This skill enforces a **three-step verification method**:
 
-## 仓库结构
+1. **Check the VASP Wiki** — establish the baseline from the official documentation
+2. **Inspect real files** — use the inspection scripts to confirm the actual format of the local file
+3. **Cross-verify** — align data across files (EIGENVAL NKPTS vs WAVECAR k-point count vs PROCAR k-point count)
+
+## Repository structure
 
 ```
 vasp-postprocess_skills/
-├── README.md                          ← 本文件
-├── SKILL.md                           ← Skill 入口（触发规则 + 核心工作流）
-├── references/                        ← 各文件格式详细文档
-│   ├── CHGCAR.md                      ← 电荷密度格式
-│   ├── DOSCAR.md                      ← 态密度格式
-│   ├── EIGENVAL.md                    ← 能带格式
-│   ├── PROCAR.md                      ← 轨道投影格式
-│   └── WAVECAR.md                     ← 波函数格式
+├── README.md                          ← This file
+├── README_zh.md                       ← Chinese version
+├── SKILL.md                           ← Skill entry (trigger rules + core workflow)
+├── references/                        ← Detailed format documentation
+│   ├── CHGCAR.md                      ← Charge density format
+│   ├── DOSCAR.md                      ← Density of states format
+│   ├── EIGENVAL.md                    ← Band structure format
+│   ├── PROCAR.md                      ← Orbital projection format
+│   └── WAVECAR.md                     ← Wave function format
 └── scripts/
-    └── inspect_templates.py           ← VASP 文件探测脚本模板
+    └── inspect_templates.py           ← VASP file inspection script templates
 ```
 
-## 核心文件说明
+## Core files
 
-### `SKILL.md` — Skill 入口
+### `SKILL.md` — Skill entry
 
-定义了：
-- **触发规则**：用户提及 VASP、EIGENVAL、CHGCAR 等关键词时自动触发
-- **手动触发模式**：触发前先询问用户确认，避免误触发
-- **六步工作法**：读文档 → 探测 → 确认 → 开发 → 交叉验证 → 交付
-- **已知陷阱清单**：20 个已验证的 VASP 文件格式陷阱
+Defines:
+- **Trigger rules**: auto-triggers on keywords such as VASP, EIGENVAL, CHGCAR
+- **Manual trigger mode**: asks for user confirmation before triggering, avoiding false positives
+- **Six-step workflow**: read docs → inspect → confirm → develop → cross-verify → deliver
+- **Known pitfalls**: 20 verified VASP file format pitfalls
 
-### `references/` — 格式详细文档
+### `references/` — Detailed format documentation
 
-每个文件一个 `.md`，包含：
-- 官方文档链接与状态（有/无文档）
-- 格式结构图
-- 物理量换算公式
-- 已知坑（实测验证，但欢迎补充）
+One `.md` file per format, covering:
+- Official documentation link and status (documented / undocumented)
+- Format structure diagram
+- Physical quantity conversion formulas
+- Known pitfalls (verified in practice, additions welcome)
 
-| 文件 | 官方文档 | 关键注意事项 |
-|------|---------|-------------|
-| EIGENVAL | ❌ 无 wiki 格式文档 | 版本差异极大，必须探测 |
-| CHGCAR | ✅ wiki 有文档 | augmentation 在数据之后 |
-| PROCAR | ✅ wiki 有示例 | 含 f 轨道列（稀土元素） |
-| WAVECAR | ❌ 无格式文档 | 只能通过 vaspwfc 读取 |
-| DOSCAR | ✅ wiki 有完整格式 | 列数可能和 wiki 不同 |
+| File | Official docs | Key caution |
+|------|--------------|-------------|
+| EIGENVAL | ❌ No wiki format docs | Version differences are huge; always inspect |
+| CHGCAR | ✅ Wiki has docs | augmentation comes after the data |
+| PROCAR | ✅ Wiki has examples | Contains f-orbital columns (rare-earth) |
+| WAVECAR | ❌ No format docs | Only readable via vaspwfc |
+| DOSCAR | ✅ Wiki has full format | Column count may differ from wiki |
 
-### `scripts/inspect_templates.py` — 探测脚本模板
+### `scripts/inspect_templates.py` — Inspection script templates
 
-为每种 VASP 文件提供头部探测函数，**不读取整个文件**（避免 GB 级文件内存溢出）：
+Provides header-inspection functions for each VASP file type, **without reading the entire file** (avoiding memory overflow on GB-scale files):
 
 ```bash
-# 用法
+# Usage
 python inspect_templates.py /path/to/EIGENVAL
 python inspect_templates.py /path/to/CHGCAR
 python inspect_templates.py /path/to/PROCAR
@@ -82,66 +85,66 @@ python inspect_templates.py /path/to/DOSCAR
 ```
 
 ```python
-# 也可以 import 使用
+# Or import and call
 from inspect_templates import inspect_eigenval
 inspect_eigenval('EIGENVAL')
 ```
 
-## 已知陷阱速查（20 条）
+## Known pitfalls quick reference (20)
 
-| # | 陷阱 | 文件 | 检查方法 |
-|---|------|------|---------|
-| 1 | `_kvecs` 在 [-0.5, 0.5) | WAVECAR | `kv.min()` 为负 |
-| 2 | 对 `_kvecs` 做 `% 1.0` | WAVECAR | 不要加任何坐标变换 |
-| 3 | PROCAR `split()[1]` 是 "of" | PROCAR | regex 替代 split |
-| 4 | OUTCAR 可能有多个 E-fermi | OUTCAR | 循环取最后一个 |
-| 5 | kfixed 必须对齐 WAVECAR kz 面 | 后处理 | snap 到最近 unique kz |
-| 6 | vaspwfc 非线程安全 | WAVECAR | multiprocessing（每进程独立 wfc） |
-| 7 | CHGCAR Fortran 列优先 | CHGCAR | `order='F'` |
-| 8 | EIGENVAL NKPTS 是 IBZ | EIGENVAL | 和 WAVECAR 点数不同 |
-| 9 | DOSCAR 巨量行数 | DOSCAR | 只读头部，按需读取 |
-| 10 | LORBIT=10 vs 11 列数不同 | PROCAR | 检查 LORBIT 设置 |
-| 11 | CHGCAR augmentation 在数据之后 | CHGCAR | 从文件尾部往前找 |
-| 12 | WAVECAR 版本兼容性 | WAVECAR | 试不同版本 vaspwfc |
-| 13 | kfixed 与切面对齐 | 任何 | 用 unique kz 值代替输入 |
-| 14 | EIGENVAL/DOSCAR 头部版本差异 | EIGENVAL, DOSCAR | 打印前 7 行确认 |
-| 15 | DOSCAR 列数与 wiki 不一致 | DOSCAR | `shape[1]` 确认 |
-| 16 | CHGCAR augmentation 位置版本依赖 | CHGCAR | 从尾部往前搜 3 整数行 |
-| 17 | PROCAR 含 f 轨道列 | PROCAR | split 列头后数实际列数 |
-| 18 | PROCAR 列头有空格前缀 | PROCAR | strip() 后 startswith |
-| 19 | WAVECAR 无官方格式文档 | WAVECAR | 只能用第三方库 |
-| 20 | EIGENVAL 无官方格式文档 | EIGENVAL | 写探测脚本先看前 7 行 |
+| # | Pitfall | File | Check method |
+|---|---------|------|--------------|
+| 1 | `_kvecs` in [-0.5, 0.5) | WAVECAR | `kv.min()` is negative |
+| 2 | Do not apply `% 1.0` to `_kvecs` | WAVECAR | Do not add any coordinate transform |
+| 3 | PROCAR `split()[1]` is "of" | PROCAR | use regex instead of split |
+| 4 | OUTCAR may have multiple E-fermi | OUTCAR | take the last one in a loop |
+| 5 | kfixed must align with WAVECAR kz plane | post-processing | snap to nearest unique kz |
+| 6 | vaspwfc is not thread-safe | WAVECAR | multiprocessing (one wfc per process) |
+| 7 | CHGCAR is Fortran column-major | CHGCAR | `order='F'` |
+| 8 | EIGENVAL NKPTS is IBZ | EIGENVAL | differs from WAVECAR k-point count |
+| 9 | DOSCAR has huge line count | DOSCAR | read header only, read on demand |
+| 10 | LORBIT=10 vs 11 different column counts | PROCAR | check the LORBIT setting |
+| 11 | CHGCAR augmentation after data | CHGCAR | search from the end of file |
+| 12 | WAVECAR version compatibility | WAVECAR | try different vaspwfc versions |
+| 13 | kfixed plane alignment | any | use unique kz values instead of input |
+| 14 | EIGENVAL/DOSCAR header version differences | EIGENVAL, DOSCAR | print first 7 lines to confirm |
+| 15 | DOSCAR column count differs from wiki | DOSCAR | confirm with `shape[1]` |
+| 16 | CHGCAR augmentation position is version-dependent | CHGCAR | search 3-integer line from the end |
+| 17 | PROCAR contains f-orbital columns | PROCAR | count actual columns after splitting header |
+| 18 | PROCAR column header has leading spaces | PROCAR | strip() then startswith |
+| 19 | WAVECAR has no official format docs | WAVECAR | only use third-party libraries |
+| 20 | EIGENVAL has no official format docs | EIGENVAL | write an inspection script, check first 7 lines |
 
-## 如何使用
+## How to use
 
-这是一个通用的 AI Agent skill，适用于任何支持自定义技能/知识库的 AI 编程助手。核心思想是：**让 AI 在回答 VASP 相关问题时，能访问到这套经过验证的格式文档和陷阱清单**，从而避免生成错误的解析代码。
+This is a generic AI Agent skill applicable to any AI coding assistant that supports custom skills/knowledge bases. The core idea: **let the AI access these verified format docs and pitfall lists when answering VASP-related questions**, so it avoids generating incorrect parsing code.
 
-将本仓库克隆到项目的技能目录下即可：
+Clone the repository into your project's skill directory:
 
 ```bash
 cd your-project/
 git clone https://github.com/yangke25491/vasp-postprocess_skills.git .opencode/skills/vasp-postprocess
 ```
 
-部分 AI 工具（如 OpenCode）会自动识别该目录下 `SKILL.md` 的 frontmatter 并注册为 skill，后续对话中可自动触发。
+Some AI tools (e.g., OpenCode) automatically detect the `SKILL.md` frontmatter in that directory and register it as a skill, triggering automatically in later conversations.
 
-## 验证来源
+## Verification sources
 
-所有格式文档均经过真实 VASP 计算文件验证：
-- WAVECAR: Gamma-centered，GB 级大小
-- EIGENVAL: 数百 k-points，数百 bands
-- PROCAR: 含 f 轨道列（稀土元素 PAW 数据集）
-- DOSCAR: NEDOS 可配置，支持多原子投影
-- CHGCAR: 大规模 FFT 网格
+All format documentation is verified against real VASP calculation files:
+- WAVECAR: Gamma-centered, GB-scale size
+- EIGENVAL: hundreds of k-points, hundreds of bands
+- PROCAR: includes f-orbital columns (rare-earth PAW datasets)
+- DOSCAR: configurable NEDOS, multiple atomic projections
+- CHGCAR: large-scale FFT grids
 
-## 不足与贡献
+## Limitations & contributions
 
-- **已测试，但肯定还有很多未覆盖的坑。**
-- VASP 版本差异（4.x / 5.x / 6.x）可能导致文件格式变化
-- ISPIN=2、SOC、非共线计算等情况的文件结构尚未充分验证
-- **欢迎提 Issue 或 PR**，帮助完善这套后处理知识库
+- **Tested, but there are certainly many uncovered pitfalls.**
+- VASP version differences (4.x / 5.x / 6.x) may change file formats
+- ISPIN=2, SOC, and non-collinear calculation file structures are not fully verified
+- **Issues and PRs are welcome** to help improve this post-processing knowledge base
 
-## 修改日志
+## Changelog
 
 ```
 2026-07-04: initial version
@@ -151,6 +154,6 @@ git clone https://github.com/yangke25491/vasp-postprocess_skills.git .opencode/s
   - moved from local to standalone public repository
 ```
 
-## 许可
+## License
 
 MIT
